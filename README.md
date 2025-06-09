@@ -101,5 +101,3 @@ pothole-severity-detection/
 - Shreya Singh – Core Developer & Research Lead
 
 ---
-
-Feel free to clone, fork, or build upon this project. If you implement improvements, contributions are welcome!
