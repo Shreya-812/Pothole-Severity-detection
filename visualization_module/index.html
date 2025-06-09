@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Leaflet Map with Real-Time Point Color</title>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H"
+    crossorigin=""
+  />
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH"
+    crossorigin=""
+  ></script>
+</head>
+<body>
+  <h1>MapBox Map with Real-Time Point Color</h1>
+  <div id="map" style="height: 500px;"></div>
+  <script>
+    // Initialize the map
+    const map = L.map("map").setView([22.133278,82.140914], 10); // Centered on specified coordinates 22.149307,82.124757
+
+    // Add the OpenStreetMap tile layer
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "&copy; OpenStreetMap contributors",
+    }).addTo(map);
+
+    // Add a circle marker
+    const circle = L.circleMarker([22.133278,82.140914], {
+      radius: 5,
+      color: "grey", // Default color
+      fillColor: "grey", // Default fill color
+      fillOpacity: 1
+    }).addTo(map);
+
+    // ThingSpeak API to fetch the latest data
+    const THINGSPEAK_CHANNEL_ID = 2824601; // Replace with your actual ThingSpeak channel ID
+    const THINGSPEAK_READ_API = "687JGJETD0F0EXCC"; // Replace with your actual API key
+
+    const BASE_URL = `https://api.thingspeak.com/channels/${THINGSPEAK_CHANNEL_ID}/fields/1.json`;
+
+    // Function to fetch the latest data from ThingSpeak
+    async function fetchThingSpeakData() {
+      try {
+        const response = await fetch(`${BASE_URL}?api_key=${THINGSPEAK_READ_API}&results=1`);
+        const data = await response.json();
+
+        // Get the latest entry (if available)
+        if (data.feeds && data.feeds.length > 0) {
+          const latestEntry = data.feeds[0].field1; // Get the latest numerical value
+          console.log("Latest Prediction Value:", latestEntry);
+
+          // Convert to integer and update circle color
+          const predictionValue = parseInt(latestEntry, 10);
+          if (predictionValue === 1) {
+            circle.setStyle({ fillColor: "green", color: "green" }); // Good
+          } else if (predictionValue === 2) {
+            circle.setStyle({ fillColor: "yellow", color: "yellow" }); // Moderately Good
+          } else if (predictionValue === 3) {
+            circle.setStyle({ fillColor: "red", color: "red" }); // Bad
+          } else {
+            circle.setStyle({ fillColor: "grey", color: "grey" }); // Default color if unknown value
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching data from ThingSpeak:", error);
+      }
+    }
+
+    // Fetch data initially and then every 15 seconds
+    fetchThingSpeakData();
+    setInterval(fetchThingSpeakData, 15000); // Update every 15 seconds
+  </script>
+</body>
+</html>
