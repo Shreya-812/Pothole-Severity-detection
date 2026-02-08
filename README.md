@@ -4,28 +4,6 @@
 
 This project detects pothole severity in real-time using IMU sensor data (pitch and roll) processed with a Decision Tree classifier. The classification results are visualized on an interactive map interface using color-coded markers, enabling users to monitor road conditions remotely.
 
----
-
-## 🧩 Code Structure
-
-pothole-severity-detection/
-│
-├── esp32_module/
-│ └── imu_to_thingspeak.ino # ESP32 code: Extracts pitch/roll & sends to ThingSpeak
-│
-├── ai_processing_module/
-│ └── ai_predictor.py # Fetches data, predicts condition, sends to ThingSpeak
-│
-├── visualization_module/
-│ └── index.html # Fetches AI predictions & displays on Leaflet.js map
-│                # JS to call ThingSpeak API and render map markers
-│
-├── docs/
-│ └── System_Diagram.png
-│ └── Output_Screenshots/
-│
-└── README.md
-
 
 ---
 
